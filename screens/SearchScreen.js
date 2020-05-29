@@ -12,38 +12,50 @@ import {
 import { useStocksContext } from "../contexts/StocksContext";
 import { scaleSize } from "../constants/Layout";
 import { Ionicons, Octicons } from "@expo/vector-icons";
-
+import { ListItem } from "../components/ListItem";
 // FixMe: implement other components and functions used in SearchScreen here (don't just put all the JSX in SearchScreen below)
 
 export default function SearchScreen({ navigation }) {
   const { ServerURL, addToWatchlist } = useStocksContext();
   const [state, setState] = useState([]);
   const [searchList, setSearchList] = useState([]);
+  const [showList, setShowList] = useState(false);
 
   // can put more code here
 
   useEffect(() => {
-    fetch("http:131.181.190.87:3001/all", {
+    fetch(ServerURL+"/all", {
       method: "GET"
     })
       .then(response => response.json())
       .then(responseJson => {
         setState(responseJson);
+        console.log("RESPONSE", responseJson);
       })
       .catch(error => {});
   }, []);
 
   const handleSearch = value => {
-    const newData = state.filter(item => {
-      const itemData = item.symbol
-        ? item.symbol.toUpperCase()
-        : "".toUpperCase();
-      const textData = value.toUpperCase();
-      return itemData.indexOf(textData) > -1;
-    });
-    setSearchList(newData);
+    if (value.length === 0) {
+      setShowList(false);
+    } else {
+      setShowList(true);
+      const filteredData = state.filter(item => {
+        const symbol = item.symbol
+          ? item.symbol.toUpperCase()
+          : "".toUpperCase();
+        const name = item.name ? item.name.toUpperCase() : "".toUpperCase();
+        const searchData = value.toUpperCase();
+        return symbol.indexOf(searchData) > -1 || name.indexOf(searchData) > -1;
+      });
+      setSearchList(filteredData);
+    }
   };
-
+const handleStock=(value)=>{
+  console.log("HI")
+  addToWatchlist(value)
+  navigation.navigate("Stocks")
+}
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
@@ -56,18 +68,13 @@ export default function SearchScreen({ navigation }) {
             onChangeText={handleSearch}
           />
         </View>
-        {searchList && (
+        {showList && (
           <FlatList
-          style={{backgroundColor:'#FFF'}}
             data={searchList}
-            renderItem={item => {
-              return (
-                <View>
-                <Text style={{ color: "#fff",backgroundColor:"#FFF", fontSize: 20 }}>{item.name}</Text>
-                </View>
-              );
+            renderItem={({ item }) => {
+              return <ListItem name={item.name} symbol={item.symbol} industry={item.industry} onPress={()=>handleStock(item.symbol)} />;
             }}
-          ></FlatList>
+          />
         )}
       </View>
     </TouchableWithoutFeedback>
@@ -91,6 +98,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#333"
   },
   textInput: {
-    marginLeft: 10
+    marginLeft: 10,
+    color: "#FFF",
+    width: "100%"
   }
 });

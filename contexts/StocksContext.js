@@ -19,6 +19,7 @@ export const useStocksContext = () => {
   // can put more code here
 
   function addToWatchlist(newSymbol) {
+    console.log("SYMBOL",newSymbol)
     //FixMe: add the new symbol to the watchlist, save it in useStockContext state and persist to AsyncStorage
   }
 
@@ -26,5 +27,5 @@ export const useStocksContext = () => {
     // FixMe: Retrieve watchlist from persistent storage
   }, []);
 
-  return { ServerURL: 'http://131.181.190.87:3001', watchList: state,  addToWatchlist };
+  return { ServerURL: 'http:131.181.190.87:3001', watchList: state,  addToWatchlist };
 };
