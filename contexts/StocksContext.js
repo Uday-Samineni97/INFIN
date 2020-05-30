@@ -19,12 +19,18 @@ export const useStocksContext = () => {
   // can put more code here
 
   function addToWatchlist(newSymbol) {
-    console.log("SYMBOL",newSymbol)
     //FixMe: add the new symbol to the watchlist, save it in useStockContext state and persist to AsyncStorage
+    let oldState = state || []
+    oldState.push(newSymbol)
+    setState(oldState)
+    AsyncStorage.setItem('watchList', JSON.stringify(oldState))
   }
 
-  useEffect(() => {
-    // FixMe: Retrieve watchlist from persistent storage
+  useEffect(async () => {
+   let persistedState = await AsyncStorage.getItem('watchList')
+   if(JSON.parse(persistedState) !== state) {
+     setState(JSON.parse(persistedState))
+   }
   }, []);
 
   return { ServerURL: 'http:131.181.190.87:3001', watchList: state,  addToWatchlist };

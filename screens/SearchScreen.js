@@ -30,7 +30,6 @@ export default function SearchScreen({ navigation }) {
       .then(response => response.json())
       .then(responseJson => {
         setState(responseJson);
-        console.log("RESPONSE", responseJson);
       })
       .catch(error => {});
   }, []);
@@ -52,9 +51,8 @@ export default function SearchScreen({ navigation }) {
     }
   };
 const handleStock=(value)=>{
-  console.log("HI")
   addToWatchlist(value)
-  navigation.navigate("Stocks")
+  navigation.navigate("Stocks", { symbol: value })
 }
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
